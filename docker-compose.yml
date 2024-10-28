@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  kafka:
+      build:
+        context: .
+        dockerfile: Dockerfile.kafka
+      container_name: kafka
+      ports:
+        - "2181:2181"  # Zookeeper
+        - "9092:9092"  # Kafka
+      volumes:
+        - ./data/kafka:/opt/kafka/logs
+      networks:
+        - spark_network
+  pyspark-notebook:
+    build: .
+    container_name: pyspark-notebook
+    ports:
+      - "8888:8888"
+    #volumes:
+    #  - ./work:/home/jovyan/work
+    environment:
+      JUPYTER_TOKEN: 'hello-there'
+    depends_on:
+      - kafka
+    networks:
+      - spark_network
+
+networks:
+  spark_network:
+    driver: bridge

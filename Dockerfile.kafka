@@ -1,0 +1,23 @@
+# Utilizar una imagen base de Java
+FROM openjdk:11-jre-slim
+
+# Establecer variables de entorno
+ENV KAFKA_HOME=/opt/kafka
+
+# Instalar dependencias necesarias
+RUN apt-get update && \
+    apt-get install -y netcat wget && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copiar la carpeta kafka_2.13-3.8.0 al contenedor
+COPY kafka_2.13-3.8.0/ $KAFKA_HOME/
+
+# Copiar el script de inicio
+COPY start-kafka.sh /usr/bin/start-kafka.sh
+RUN chmod +x /usr/bin/start-kafka.sh
+
+# Exponer puertos necesarios
+EXPOSE 2181 9092
+
+# Comando de inicio
+CMD ["start-kafka.sh"]
